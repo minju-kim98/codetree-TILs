@@ -69,6 +69,11 @@ void rollDice() {
 		nextx = nowx + direct[d.dir][1];
 	}
 
+	nowy = nexty;
+	nowx = nextx;
+
+	result += visited[nowy][nowx];
+
 	int T = d.T; int F = d.F; int R = d.R;
 	if (d.dir == 0) {
 		d.T = 7 - R;
@@ -85,24 +90,21 @@ void rollDice() {
 		d.F = F;
 		d.R = 7 - T;
 	}
-	else {
+	else if(d.dir == 3){
 		d.T = F;
 		d.F = 7 - T;
 		d.R = R;
 	}
 
-	result += visited[nexty][nextx];
-
 	int down = 7 - d.T;
-	if (down > map[nexty][nextx]) {
-		d.dir = (d.dir - 1) % 4;
-	}
-	else if (down < map[nexty][nextx]) {
+	if (down > map[nowy][nowx]) {
 		d.dir = (d.dir + 1) % 4;
 	}
+	else if (down < map[nowy][nowx]) {
+		d.dir = (d.dir - 1 + 4) % 4;
+	}
 
-	nowy = nexty;
-	nowx = nextx;
+	
 
 }
 
