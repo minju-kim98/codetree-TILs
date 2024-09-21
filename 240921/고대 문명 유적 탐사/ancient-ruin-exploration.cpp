@@ -17,10 +17,10 @@ struct Rotate {
 		if (angle < Next.angle) return true;
 		if (angle > Next.angle) return false;
 
-		if (y < Next.y) return true;
-		if (y > Next.y) return false;
+		if (x < Next.x) return true;
+		if (x > Next.x) return false;
 
-		return x < Next.x;
+		return y < Next.y;
 	}
 };
 
