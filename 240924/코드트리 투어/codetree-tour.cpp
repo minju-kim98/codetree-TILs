@@ -100,7 +100,6 @@ int main() {
 			else {
 				int id = products.top().id;
 				int revenue = products.top().revenue;
-				int dest = products.top().dest;
 				int cost = products.top().cost;
 
 				while (isValid[id] == 0) {
@@ -111,8 +110,6 @@ int main() {
 					if (products.empty()) break;
 
 					id = products.top().id;
-					dest = products.top().dest;
-					cost = products.top().cost;
 				}
 
 				vector<Product> tmp;
