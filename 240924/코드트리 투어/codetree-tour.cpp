@@ -62,21 +62,6 @@ void bfs() {
 	}
 }
 
-//void printQueue(priority_queue<Product> pq) {
-//	priority_queue<Product> tmp;
-//
-//	cout << "queue:==========" << endl;
-//	while (!pq.empty()) {
-//		Product p = pq.top();
-//		cout << p.id << " " << p.revenue << " " << p.dest << " " << p.cost << endl;
-//		pq.pop();
-//		tmp.push(p);
-//	}
-//	cout <<"================" << endl;
-//	
-//	pq = tmp;
-//}
-
 int main() {
 	int Q;
 	cin >> Q;
@@ -102,8 +87,6 @@ int main() {
 			cost = visited[dest];
 			products.push({ id, revenue, dest, cost });
 			isValid[id] = 1;
-
-			/*printQueue(products);*/
 		}
 		else if (inst == 300) {
 			int id;
@@ -116,6 +99,7 @@ int main() {
 			if (products.empty()) cout << -1 << endl;
 			else {
 				int id = products.top().id;
+				int revenue = products.top().revenue;
 				int dest = products.top().dest;
 				int cost = products.top().cost;
 
@@ -134,8 +118,15 @@ int main() {
 				vector<Product> tmp;
 
 				while (!products.empty()) {
-					int revenue = products.top().revenue;
+					id = products.top().id;
+					revenue = products.top().revenue;
 					cost = products.top().cost;
+
+					if (isValid[id] == 0) {
+						products.pop();
+						isValid.erase(id);
+						continue;
+					}
 
 					if (cost == 1e9 || revenue < cost) {
 						tmp.push_back(products.top());
@@ -151,11 +142,9 @@ int main() {
 				}
 
 				for (auto i : tmp) {
-						products.push(i);
-					}
+					products.push(i);
+				}
 			}
-
-			/*printQueue(products);*/
 		}
 		else if (inst == 500) {
 			cin >> start;
@@ -179,8 +168,6 @@ int main() {
 
 			products = tmp;
 		}
-
-		/*printQueue(products);*/
 	}
 
 
