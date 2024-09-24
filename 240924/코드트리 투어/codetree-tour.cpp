@@ -37,7 +37,7 @@ vector<int> visited;
 void bfs() {
 	priority_queue <Edge> pq;
 	visited.assign(N, 1e9);
-	visited[start] = 1;
+	visited[start] = 0;
 	pq.push({start, 0});
 
 	while (!pq.empty()) {
@@ -71,20 +71,20 @@ int main() {
 
 		if (inst == 100) {
 			cin >> N >> M;
-			cities.assign(N, vector<Edge>(M));
+			cities.assign(N, vector<Edge>());
 			for (int i = 0; i < M; i++) {
 				int v, u, w;
 				cin >> v >> u >> w;
 				cities[v].push_back({u, w});
 				cities[u].push_back({v, w});
-
-				bfs();
 			}
+
+			bfs();
 		}
 		else if (inst == 200) {
 			int id, revenue, dest, cost;
 			cin >> id >> revenue >> dest;
-			cost = visited[dest] - 1;
+			cost = visited[dest];
 			products.push({ id, revenue, dest, cost });
 		}
 		else if (inst == 300) {
@@ -116,7 +116,7 @@ int main() {
 					int revenue = products.top().revenue;
 					cost = products.top().cost;
 
-					if (cost == 1e9 - 1 || revenue < cost) {
+					if (cost == 1e9 || revenue < cost) {
 						tmp.push_back(products.top());
 						products.pop();
 					}
@@ -127,13 +127,11 @@ int main() {
 				else {
 					cout << products.top().id << endl;
 					products.pop();
-
-					
 				}
 
 				for (auto i : tmp) {
-					products.push(i);
-				}
+						products.push(i);
+					}
 			}
 		}
 		else if (inst == 500) {
@@ -147,7 +145,7 @@ int main() {
 
 				if (erased.find(id) == erased.end()) {
 					Product p = products.top();
-					p.cost = visited[p.dest] - 1;
+					p.cost = visited[p.dest];
 					tmp.push(p);
 				}
 				products.pop();
