@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <unordered_set>
+#include <unordered_map>
 #include <queue>
 
 using namespace std;
@@ -30,7 +30,7 @@ struct Product {
 
 vector<vector <Edge>> cities;
 priority_queue<Product> products;
-unordered_set<int> erased;
+unordered_map<int, int> isValid;
 int N, M, start;
 vector<int> visited;
 
@@ -62,6 +62,21 @@ void bfs() {
 	}
 }
 
+//void printQueue(priority_queue<Product> pq) {
+//	priority_queue<Product> tmp;
+//
+//	cout << "queue:==========" << endl;
+//	while (!pq.empty()) {
+//		Product p = pq.top();
+//		cout << p.id << " " << p.revenue << " " << p.dest << " " << p.cost << endl;
+//		pq.pop();
+//		tmp.push(p);
+//	}
+//	cout <<"================" << endl;
+//	
+//	pq = tmp;
+//}
+
 int main() {
 	int Q;
 	cin >> Q;
@@ -86,11 +101,16 @@ int main() {
 			cin >> id >> revenue >> dest;
 			cost = visited[dest];
 			products.push({ id, revenue, dest, cost });
+			isValid[id] = 1;
+
+			/*printQueue(products);*/
 		}
 		else if (inst == 300) {
 			int id;
 			cin >> id;
-			erased.insert(id);
+			if (isValid.find(id) != isValid.end()) {
+				isValid[id] = 0;
+			}
 		}
 		else if (inst == 400) {
 			if (products.empty()) cout << -1 << endl;
@@ -99,9 +119,10 @@ int main() {
 				int dest = products.top().dest;
 				int cost = products.top().cost;
 
-				while (!erased.empty() && erased.find(id) != erased.end()) {
+				while (isValid[id] == 0) {
 
 					products.pop();
+					isValid.erase(id);
 
 					if (products.empty()) break;
 
@@ -133,6 +154,8 @@ int main() {
 						products.push(i);
 					}
 			}
+
+			/*printQueue(products);*/
 		}
 		else if (inst == 500) {
 			cin >> start;
@@ -143,16 +166,21 @@ int main() {
 			while (!products.empty()) {
 				int id = products.top().id;
 
-				if (erased.find(id) == erased.end()) {
+				if (isValid[id] == 1) {
 					Product p = products.top();
 					p.cost = visited[p.dest];
 					tmp.push(p);
+				}
+				else {
+					isValid.erase(id);
 				}
 				products.pop();
 			}
 
 			products = tmp;
 		}
+
+		/*printQueue(products);*/
 	}
 
 
