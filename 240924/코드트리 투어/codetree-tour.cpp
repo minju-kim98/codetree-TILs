@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
@@ -29,8 +30,7 @@ struct Product {
 };
 
 vector<vector <Edge>> cities;
-priority_queue<Product> products;
-unordered_map<int, int> isValid;
+unordered_map<int, Product> products;
 int N, M, start;
 vector<int> visited;
 
@@ -62,6 +62,10 @@ void bfs() {
 	}
 }
 
+bool cmp(pair<int, Product>& a, pair<int, Product>& b) {
+	return b.second < a.second;
+}
+
 int main() {
 	int Q;
 	cin >> Q;
@@ -85,85 +89,39 @@ int main() {
 			int id, revenue, dest, cost;
 			cin >> id >> revenue >> dest;
 			cost = visited[dest];
-			products.push({ id, revenue, dest, cost });
-			isValid[id] = 1;
+			products[id] = { id, revenue, dest, cost };
 		}
 		else if (inst == 300) {
 			int id;
 			cin >> id;
-			if (isValid.find(id) != isValid.end()) {
-				isValid[id] = 0;
+			if (products.find(id) != products.end()) {
+				products.erase(id);
 			}
 		}
 		else if (inst == 400) {
-			if (products.empty()) cout << -1 << endl;
-			else {
-				int id = products.top().id;
-				int revenue = products.top().revenue;
-				int cost = products.top().cost;
+			int answer = -1;
+			vector<pair<int, Product>> v(products.begin(), products.end());
+			sort(v.begin(), v.end(), cmp);
 
-				while (isValid[id] == 0) {
-
-					products.pop();
-					isValid.erase(id);
-
-					if (products.empty()) break;
-
-					id = products.top().id;
-				}
-
-				vector<Product> tmp;
-
-				while (!products.empty()) {
-					id = products.top().id;
-					revenue = products.top().revenue;
-					cost = products.top().cost;
-
-					if (isValid[id] == 0) {
-						products.pop();
-						isValid.erase(id);
-						continue;
-					}
-
-					if (cost == 1e9 || revenue < cost) {
-						tmp.push_back(products.top());
-						products.pop();
-					}
-					else break;
-				}
-
-				if (products.empty()) cout << -1 << endl;
+			for (auto const &elem : v) {
+				if (elem.second.cost == 1e9 || elem.second.revenue < elem.second.cost)
+					continue;
 				else {
-					cout << products.top().id << endl;
-					products.pop();
-				}
-
-				for (auto i : tmp) {
-					products.push(i);
+					answer = elem.first;
+					products.erase(elem.first);
+					break;
 				}
 			}
+
+			cout << answer << endl;
 		}
 		else if (inst == 500) {
 			cin >> start;
 			bfs();
 			
-			priority_queue<Product> tmp;
-
-			while (!products.empty()) {
-				int id = products.top().id;
-
-				if (isValid[id] == 1) {
-					Product p = products.top();
-					p.cost = visited[p.dest];
-					tmp.push(p);
-				}
-				else {
-					isValid.erase(id);
-				}
-				products.pop();
+			for (auto &p : products) {
+				p.second.cost = visited[p.second.dest];
 			}
-
-			products = tmp;
 		}
 	}
 
