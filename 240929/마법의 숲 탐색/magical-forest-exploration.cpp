@@ -35,8 +35,6 @@ bool moveNorth() {
 	if (dy == now.y) return false;
 	
 	now.y = dy;
-	now.x = c;
-	now.d = d;
 
 	return true;
 }
@@ -47,18 +45,16 @@ bool moveWest() {
 	int dx = now.x;
 
 	if (dy + 2 >= R || dx - 2 < 0) return false;
-	if (map[dy + 1][dx - 2] == 0 && map[dy + 2][dx - 1] == 0) {
-		if (dy >= 1 && map[dy - 1][dx - 1] == 0 && map[dy][dx - 2] == 0 && map[dy + 1][dx - 1] == 0) {
+	if (map[dy + 1][dx - 2] == 0 && map[dy + 2][dx - 1] == 0 && map[dy][dx - 2] == 0 && map[dy + 1][dx - 1] == 0) {
+		if (dy >= 1 && map[dy - 1][dx - 1] == 0 ) {
 			now.y = dy + 1;
 			now.x = dx - 1;
-			c = dx - 1;
 			now.d = (now.d + 3) % 4;
 			return true;
 		}
 		else if (dy < 1) {
 			now.y = dy + 1;
 			now.x = dx - 1;
-			c = dx - 1;
 			now.d = (now.d + 3) % 4;
 			return true;
 		}
@@ -74,18 +70,16 @@ bool moveEast() {
 	int dx = now.x;
 
 	if (dx + 2 >= C || dy + 2 >= R) return false;
-	if (map[dy + 1][dx + 2] == 0 && map[dy + 2][dx + 1] == 0) {
-		if (dy >= 1 && map[dy - 1][dx + 1] == 0 && map[dy][dx + 2] == 0 && map[dy + 1][dx + 1] == 0) {
+	if (map[dy + 1][dx + 2] == 0 && map[dy + 2][dx + 1] == 0 && map[dy][dx + 2] == 0 && map[dy + 1][dx + 1] == 0) {
+		if (dy >= 1 && map[dy - 1][dx + 1] == 0 ) {
 			now.y = dy + 1;
 			now.x = dx + 1;
-			c = dx + 1;
 			now.d = (now.d + 1) % 4;
 			return true;
 		}
 		else if (dy < 1) {
 			now.y = dy + 1;
 			now.x = dx + 1;
-			c = dx + 1;
 			now.d = (now.d + 1) % 4;
 			return true;
 		}
