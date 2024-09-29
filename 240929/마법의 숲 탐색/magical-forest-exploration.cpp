@@ -1,113 +1,192 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <queue>
+
 using namespace std;
 
-struct Car {
-    int y, x, d;
+struct Car { int y, x, d; };
+struct Node { int y, x; };
+
+int R, C, K, c, d, result;
+int direct[4][2] = {
+	-1, 0,
+	0, 1,
+	1, 0,
+	0, -1,
 };
+bool moving = false;
+Car now;
+vector<vector<int>> map;
 
-const int MAX_SIZE = 70;
-const int dx[4] = {0, 1, 0, -1};  // North, East, South, West
-const int dy[4] = {-1, 0, 1, 0};
+bool moveNorth() { 
+	// 남쪽으로 더이상 이동할 수 없을 때 까지 이동
+	int dy = now.y;
+	int dx = now.x;
+	while (dy + 2 < R) {
+		if (map[dy + 1][dx - 1] == 0 && map[dy + 2][dx] == 0 && map[dy + 1][dx + 1] == 0) {
+			dy++;
+			continue;
+		}
+		else {
+			break;
+		}
+	}
 
-int R, C, K;
-vector<vector<int>> forest(MAX_SIZE, vector<int>(MAX_SIZE, 0));
-int result = 0;
+	if (dy == now.y) return false;
+	
+	now.y = dy;
 
-bool isValid(int y, int x) {
-    return y >= 0 && y < R && x >= 0 && x < C;
+	return true;
 }
 
-bool canMoveSouth(const Car& car) {
-    for (int i = -1; i <= 1; i++) {
-        if (!isValid(car.y + 2, car.x + i) || forest[car.y + 2][car.x + i] != 0) {
-            return false;
-        }
-    }
-    return true;
+bool moveWest() {
+	// 서쪽으로 회전하면서 아래로 한칸
+	int dy = now.y;
+	int dx = now.x;
+
+	if (dy + 2 >= R || dx - 2 < 0) return false;
+	if (map[dy + 1][dx - 2] == 0 && map[dy + 2][dx - 1] == 0 && map[dy + 1][dx - 1] == 0) {
+		if (dy >= 1 && map[dy - 1][dx - 1] == 0 && map[dy][dx - 2] == 0) {
+			now.y = dy + 1;
+			now.x = dx - 1;
+			now.d = (now.d + 3) % 4;
+			return true;
+		}
+		else if (dy == 0 && map[dy][dx - 2] == 0) {
+			now.y = dy + 1;
+			now.x = dx - 1;
+			now.d = (now.d + 3) % 4;
+			return true;
+		}
+		else if (dy < 0) {
+			now.y = dy + 1;
+			now.x = dx - 1;
+			now.d = (now.d + 3) % 4;
+			return true;
+		}
+		
+	}
+	
+	return false;
 }
 
-bool canRotate(const Car& car, int dir) {
-    int nx = car.x + dx[dir];
-    int ny = car.y + dy[dir];
-    for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-            if (!isValid(ny + i, nx + j) || forest[ny + i][nx + j] != 0) {
-                return false;
-            }
-        }
-    }
-    return true;
+bool moveEast() {
+	// 동쪽으로 회전하면서 아래로 한칸
+	int dy = now.y;
+	int dx = now.x;
+
+	if (dx + 2 >= C || dy + 2 >= R) return false;
+	if (map[dy + 1][dx + 2] == 0 && map[dy + 2][dx + 1] == 0 && 
+		 map[dy + 1][dx + 1] == 0) {
+		if (dy >= 1 && map[dy - 1][dx + 1] == 0 && map[dy][dx + 2] == 0) {
+			now.y = dy + 1;
+			now.x = dx + 1;
+			now.d = (now.d + 1) % 4;
+			return true;
+		}
+		else if (dy == 0 && map[dy][dx + 2] == 0) {
+			now.y = dy + 1;
+			now.x = dx + 1;
+			now.d = (now.d + 1) % 4;
+			return true;
+		}
+		else if (dy < 0) {
+			now.y = dy + 1;
+			now.x = dx + 1;
+			now.d = (now.d + 1) % 4;
+			return true;
+		}
+	}
+
+	return false;
 }
 
-void placeCar(Car& car, int id) {
-    for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-            if (i == 0 && j == 0) continue;
-            forest[car.y + i][car.x + j] = id;
-        }
-    }
-    forest[car.y + dy[car.d]][car.x + dx[car.d]] = id + 1;  // Exit
+int moveAngel() {
+	// 정령 이동
+	vector<vector<int>> visited(R, vector<int>(C, 0));
+	queue<Node> q;
+	visited[now.y][now.x] = 1;
+	q.push({ now.y, now.x });
+
+	while (!q.empty()) {
+		Node here = q.front();
+		q.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int dy = here.y + direct[i][0];
+			int dx = here.x + direct[i][1];
+
+			if (dy < 0 || dy >= R || dx < 0 || dx >= C) continue;
+			if (visited[dy][dx]) continue;
+			if (map[dy][dx] == 0) continue;
+
+			if (map[dy][dx] == map[here.y][here.x] + 1) {
+				visited[dy][dx] = 1;
+				q.push({ dy, dx });
+				continue;
+			}
+
+			if (map[here.y][here.x] % 2 != 0 && map[dy][dx] != map[here.y][here.x]) continue;
+
+			visited[dy][dx] = 1;
+			q.push({ dy, dx });
+		}
+	}
+	
+	for (int i = R - 1; i >= 0; i--) {
+		for (int j = 0; j < C; j++) {
+			if (visited[i][j] == 1)
+				return i + 1;
+		}
+	}
+
+	return 0;
 }
 
-int moveFairy(const Car& car) {
-    int y = car.y, x = car.x;
-    while (isValid(y + 1, x) && forest[y + 1][x] != 0) {
-        y++;
-    }
-    return y;
-}
-
-void clearForest() {
-    for (int i = 0; i < R; i++) {
-        fill(forest[i].begin(), forest[i].end(), 0);
-    }
-}
-
-bool moveCar(Car& car) {
-    while (true) {
-        if (canMoveSouth(car)) {
-            car.y++;
-        } else if (canRotate(car, (car.d + 3) % 4)) {  // Try rotating west
-            car.x += dx[(car.d + 3) % 4];
-            car.y++;
-            car.d = (car.d + 3) % 4;
-        } else if (canRotate(car, (car.d + 1) % 4)) {  // Try rotating east
-            car.x += dx[(car.d + 1) % 4];
-            car.y++;
-            car.d = (car.d + 1) % 4;
-        } else {
-            break;
-        }
-    }
-    return car.y >= 1;  // Car is inside the forest
-}
 
 int main() {
-    cin >> R >> C >> K;
-    if (R < 5 || R > MAX_SIZE || C < 5 || C > MAX_SIZE || K < 1 || K > 1000) {
-        cout << "Invalid input" << endl;
-        return 1;
-    }
+	cin >> R >> C >> K;
+	map.resize(R, vector<int>(C, 0));
+	int idx = 1;
+	for (int i = 0; i < K; i++) {
+		cin >> c >> d;
+		c--;
+		now.y = -1;
+		now.x = c;
+		now.d = d;
 
-    for (int i = 0; i < K; i++) {
-        int c, d;
-        cin >> c >> d;
-        if (c < 2 || c > C - 1 || d < 0 || d > 3) {
-            cout << "Invalid input" << endl;
-            return 1;
-        }
+		moving = false;
+		bool moveable = true;
+		while (moveable) {
+			moveable = false;
+			moveable = moveable || moveNorth();
+			moving = true;
+			if(!moveable)
+				moveable = moveable || moveWest();
+			if(!moveable)
+				moveable = moveable || moveEast();
+		}
+		
+		if (now.y < 1) {
+			map.assign(R, vector<int>(C, 0));
+			continue;
+		}
 
-        Car car = {0, c - 1, d};
-        if (moveCar(car)) {
-            placeCar(car, i * 2 + 1);
-            result += moveFairy(car);
-        } else {
-            clearForest();
-        }
-    }
+		map[now.y - 1][now.x] = idx;
+		map[now.y][now.x - 1] = idx;
+		map[now.y][now.x] = idx;
+		map[now.y][now.x + 1] = idx;
+		map[now.y + 1][now.x] = idx;
 
-    cout << result << endl;
-    return 0;
+		map[now.y + direct[now.d][0]][now.x + direct[now.d][1]] = idx + 1;
+
+		idx += 2;
+
+
+		result += moveAngel();
+	}
+
+	std::cout << result;
+
+	return 0;
 }
