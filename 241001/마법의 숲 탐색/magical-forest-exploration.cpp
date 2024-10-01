@@ -19,6 +19,7 @@ vector<vector<int>> map;
 
 bool check(int y, int x) {
 	if (y < 0) return true;
+	if (y >= R || x >= C || x < 0) return false;
 	return map[y][x] == 0;
 }
 
@@ -27,7 +28,7 @@ bool moveNorth() {
 	int dy = now.y;
 	int dx = now.x;
 	while (dy + 2 < R) {
-		if (map[dy + 1][dx - 1] == 0 && map[dy + 2][dx] == 0 && map[dy + 1][dx + 1] == 0) {
+		if (check(dy + 1, dx - 1) && check(dy + 2, dx) && check(dy + 1, dx + 1)) {
 			dy++;
 			continue;
 		}
@@ -68,7 +69,7 @@ bool moveEast() {
 
 	if (dx + 2 >= C || dy + 2 >= R) return false;
 	if (check(dy + 1, dx + 2) && check(dy + 2, dx + 1) && 
-		 check(dy + 1, dx + 1) && check(dy - 1, dx + 1) && check(dy, dx + 2)) {
+		check(dy + 1, dx + 1) && check(dy - 1, dx + 1) && check(dy, dx + 2)) {
 		now.y = dy + 1;
 		now.x = dx + 1;
 		now.d = (now.d + 1) % 4;
@@ -128,7 +129,7 @@ int main() {
 	for (int i = 0; i < K; i++) {
 		cin >> c >> d;
 		c--;
-		now.y = -1;
+		now.y = -2;
 		now.x = c;
 		now.d = d;
 
@@ -156,7 +157,7 @@ int main() {
 		map[now.y + direct[now.d][0]][now.x + direct[now.d][1]] = idx + 1;
 
 		idx += 2;
-
+	
 		result += moveAngel();
 	}
 
