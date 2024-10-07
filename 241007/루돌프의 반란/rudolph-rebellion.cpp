@@ -53,6 +53,18 @@ int dist[4][2] = {
 	0, -1,
 };
 
+void printMap() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cout << map[i][j] << " ";
+		}
+
+		cout << endl;
+	}
+
+	cout << "==============\n";
+}
+
 int getDistance(Node r, Node s) {
 	return (r.y - s.y) * (r.y - s.y) + (r.x - s.x) * (r.x - s.x);
 }
@@ -102,7 +114,7 @@ bool play() {
 			santas[s].isAlive = false;
 		}
 		else {
-			if (map[ny][nx] != 0) {
+			if (map[ny][nx] > 0 && map[ny][nx] != s + 1) {
 				// 상호작용 일어남
 				// 해당 산타도 minDirect 방향으로 1칸 밀려나고...
 				// 연쇄적으로 1칸씩 밀려 나가기 반복
@@ -127,7 +139,6 @@ bool play() {
 					
 					map[my][mx] = map[tmpy][tmpx];
 					santas[nowS].position = { my, mx };
-					
 					my = tmpy;
 					mx = tmpx;
 				}
@@ -187,7 +198,7 @@ bool play() {
 				santas[i].isAlive = false;
 			}
 			else {
-				if (map[ny][nx] != 0) {
+				if (map[ny][nx] > 0 && map[ny][nx] != i + 1) {
 					// 상호작용
 					int my = ny;
 					int mx = nx;
