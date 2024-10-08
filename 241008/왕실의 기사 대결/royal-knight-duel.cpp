@@ -69,7 +69,8 @@ void moveKnights(int num, int d) {
 		Knight now = knights[knum];
 		for (int i = now.r; i < now.r + now.h; i++) {
 			for (int j = now.c; j < now.c + now.w; j++) {
-				knightMap[i][j] = 0;
+				if(knightMap[i][j] == now.num)
+					knightMap[i][j] = 0;
 			}
 		}
 
@@ -149,7 +150,6 @@ int main() {
 
 		moveKnights(num, d);
 		getDamage(num);
-
 	}
 
 	int result = 0;
