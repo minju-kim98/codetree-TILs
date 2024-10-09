@@ -98,7 +98,7 @@ int main() {
 	}
 
 	// 턴이 총 K번 반복
-	for (int turn = 0; turn < K; turn++) {
+	for (int turn = 1; turn <= K; turn++) {
 		sort(towers.begin(), towers.end());
 		int zeroCnt = 0;
 		for (int i = 0; i < towers.size(); i++) {
@@ -124,7 +124,7 @@ int main() {
 		towers.front().power += (N + M);
 		int power = towers.front().power;
 		map[weak.y][weak.x] = power;
-		towers.front().recent++;
+		towers.front().recent = turn;
 
 		// 2. 공격자의 공격
 		// 가장 강한 포탑 공격 => tower.back()
@@ -134,6 +134,16 @@ int main() {
 		unordered_set<Node, NodeHash> damaged;
 		
 		bfs(weak, strong);
+
+		//cout << "Visited: \n";
+		//for (int i = 0; i < N; i++) {
+		//	for (int j = 0; j < M; j++) {
+		//		cout << visited[i][j] << " ";
+		//	}
+		//	cout << endl;
+		//}
+		//cout << "==================\n";
+
 
 		if (visited[strong.y][strong.x]) {
 			// 2-1. 레이저 공격
@@ -188,6 +198,16 @@ int main() {
 				}
 			}
 		}
+
+
+		//cout << "Map: \n";
+		//for (int i = 0; i < N; i++) {
+		//	for (int j = 0; j < M; j++) {
+		//		cout << map[i][j] << " ";
+		//	}
+		//	cout << endl;
+		//}
+		//cout << "========================\n";
 	}
 
 	sort(towers.begin(), towers.end());
