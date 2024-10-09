@@ -31,7 +31,7 @@ struct Tower {
 		if (power != next.power) return power < next.power;
 		if (recent != next.recent) return recent > next.recent;
 		if (p.y + p.x != next.p.y + next.p.x) return p.y + p.x > next.p.y + next.p.x;
-		return p.y > next.p.y;
+		return p.x > next.p.x;
 	}
 };
 
@@ -47,6 +47,7 @@ int direct[4][2] = {
 	0, -1,
 	-1, 0,
 };
+
 int allDirect[8][2] = {
 	-1, -1,
 	-1, 0,
@@ -135,16 +136,6 @@ int main() {
 		
 		bfs(weak, strong);
 
-		//cout << "Visited: \n";
-		//for (int i = 0; i < N; i++) {
-		//	for (int j = 0; j < M; j++) {
-		//		cout << visited[i][j] << " ";
-		//	}
-		//	cout << endl;
-		//}
-		//cout << "==================\n";
-
-
 		if (visited[strong.y][strong.x]) {
 			// 2-1. 레이저 공격
 			Node now = strong;
@@ -177,6 +168,7 @@ int main() {
 				int dx = (strong.x + allDirect[i][1] + M) % M;
 				
 				if (map[dy][dx] == 0) continue;
+				if (dy == weak.y && dx == weak.x) continue;
 				int t = towerMap[dy][dx];
 				towers[t].power = max(0, towers[t].power - power / 2);
 				map[dy][dx] = towers[t].power;
@@ -198,16 +190,6 @@ int main() {
 				}
 			}
 		}
-
-
-		//cout << "Map: \n";
-		//for (int i = 0; i < N; i++) {
-		//	for (int j = 0; j < M; j++) {
-		//		cout << map[i][j] << " ";
-		//	}
-		//	cout << endl;
-		//}
-		//cout << "========================\n";
 	}
 
 	sort(towers.begin(), towers.end());
