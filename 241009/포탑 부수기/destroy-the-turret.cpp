@@ -31,7 +31,7 @@ struct Tower {
 		if (power != next.power) return power < next.power;
 		if (recent != next.recent) return recent > next.recent;
 		if (p.y + p.x != next.p.y + next.p.x) return p.y + p.x > next.p.y + next.p.x;
-		return p.x > next.p.x;
+		return p.y > next.p.y;
 	}
 };
 
@@ -160,6 +160,7 @@ int main() {
 			// 2-2 포탄 공격
 			towers.back().power = max(0, towers.back().power - power);
 			map[strong.y][strong.x] = towers.back().power;
+			damaged.insert(strong);
 
 			for (int i = 0; i < 8; i++) {
 				int dy = (strong.y + allDirect[i][0] + N) % N;
