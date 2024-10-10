@@ -73,10 +73,6 @@ vector<Node> bfs(Node start, Node finish) {
 		Node now = q.front();
 		q.pop();
 
-		if (now == finish) {
-			return getPath(prevNode, start, finish);
-		}
-
 		for (int i = 0; i < 4; i++) {
 			int dy = now.y + direct[i][0];
 			int dx = now.x + direct[i][1];
@@ -106,7 +102,7 @@ vector<Camp> bfsCamp(Node start) {
 		Node now = q.front();
 		q.pop();
 
-		if (map[now.y][now.x] == 1 && visited[now.y][now.x] < minVisited) {
+		if (map[now.y][now.x] == 1 && visited[now.y][now.x] <= minVisited) {
 			result.push_back({ {now.y, now.x}, visited[now.y][now.x] });
 			minVisited = visited[now.y][now.x];
 		}
